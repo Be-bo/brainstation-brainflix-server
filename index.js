@@ -3,15 +3,13 @@ import cors from 'cors';
 import multer from 'multer';
 import bodyParser from 'body-parser';
 import fs from 'fs';
-import { error } from 'console';
-import { rejects } from 'assert';
 const app = express();
 
 
 // MARK: VARS
 const videosPath = '/uploads/videos.json';
 const videoDetailsPath = '/uploads/video-details.json';
-const imageBucketPath = 'uploads';
+const thumbnailsPath = '/uploads/thumbnails/';
 
 
 // MARK: SETUP
@@ -26,22 +24,31 @@ app.use(
 
 
 // MARK: FUNCTIONS
-function getVideoPreviewInfo(jsonPayload){
-  // TODO: gotta extract from the json payload
+function getVideoPreviewInfo(parsedVideoDetails){
+  let videoPreviewInfo = {
+    id: parsedVideoDetails.id,
+    title: parsedVideoDetails.title,
+    channel: parsedVideoDetails.channel,
+    image: parsedVideoDetails.image
+  }
+
+  return videoPreviewInfo;
 }
 
-function uploadNewVideoData(jsonPayload) {
+function appendNewVideoDetails(stringifiedVideoDetails) {
   return new Promise(async (resolve, reject) => {
     try{
 
+      const parsedVideoDetails = JSON.parse(stringifiedVideoDetails);
+
       let localJSON = await fs.promises.readFile(videoDetailsPath);
       let parsedJSON = JSON.parse(localJSON);
-      parsedJSON.items.push(jsonPayload); // assuming the uploaded json payload will already be in the video-details format
+      parsedJSON.items.push(parsedVideoDetails); // assuming the uploaded json payload will already be in the video-details format
       await fs.promises.writeFile(videoDetailsPath, JSON.stringify(parsedJSON, null, 2));
 
       localJSON = await fs.promises.readFile(videosPath);
       parsedJSON = JSON.parse(localJSON);
-      parsedJSON.items.push(getVideoPreviewInfo(jsonPayload));
+      parsedJSON.items.push(getVideoPreviewInfo(parsedVideoDetails));
       await fs.promises.writeFile(videosPath, JSON.stringify(parsedJSON, null, 2));
 
       resolve();
@@ -53,15 +60,16 @@ function uploadNewVideoData(jsonPayload) {
   });
 }
 
-function appendToComments(newComment, videoId){
+function appendToComments(stringifiedComment, videoId){
   return new Promise(async (resolve, reject) =>{
     try{
+      const parsedComment = JSON.parse(stringifiedComment);
       const fileData = await fs.promises.readFile(videoDetailsPath);
       const parsedJSON = JSON.parse(fileData);
       const videoObject = parsedJSON.items.find((item) => {
         return item.id == videoId;
       });
-      videoObject.comments.push(newComment);
+      videoObject.comments.push(parsedComment);
       await fs.promises.writeFile(videoDetailsPath, JSON.stringify(parsedJSON, null, 2));
       resolve();
     }catch(error){
@@ -72,19 +80,56 @@ function appendToComments(newComment, videoId){
 }
 
 function getStringifiedVideosJSON(){
+  return new Promise(async (resolve, reject) => {
+    try{
+       const stringifiedVideos = await fs.promises.readFile(videosPath);
+       resolve(stringifiedVideos);
+    }catch(error){
+      console.log(error);
+      reject(error);
+    }
+  });
 }
 
 function getStringifiedVideoDetailsJSON(videoId){
+  return new Promise(async(resolve, reject) =>{
+    try{
+      const stringifiedVideoDetails = fs.promises.readFile(videoDetailsPath);
+      const parsedVideoDetails = JSON.parse(stringifiedVideoDetails);
+      const parsedVideo = parsedVideoDetails.items.find((item) =>{
+        item.id == videoId;
+      });
+      const stringifiedVideo = JSON.stringify(parsedVideo, null, 2);
+      resolve(stringifiedVideo);
+    }catch(error){
+      console.log(error);
+      reject(error);
+    }
+  });
 }
 
-function getThumbnailLocalPath(thumbnailURL){
+function getThumbnailLocalPath(videoId){ //
+  return new Promise(async (resolve, reject) => {
+    try{
+
+      const stringifiedLocalVideos = await fs.promises.readFile(videosPath);
+      const parsedLocalVideos = JSON.parse(stringifiedLocalVideos);
+      const parsedVideo = parsedLocalVideos.items.find((item) => {
+        return item.id == videoId;
+      });
+      resolve(thumbnailsPath.concat(parsedVideo.image));
+    }catch(error){
+      console.log(error);
+      reject(error);
+    }
+  });
 }
 
 
 // MARK: SAVING FILES
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, thumbnailsPath);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -97,6 +142,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 
+
+
+
+// ************************************* REST *************************************
 
 // MARK: HELLO WORLD
 app.get('/', (req, res) => {
@@ -151,8 +200,7 @@ app.get('/videos/:videoId', async (req, res) => {
 app.post('/videos/:videoId/comment', async (req, res) => {
   const videoId = req.params.videoId;
   try{
-    const parsedComment = JSON.parse(req.body.json);
-    await appendToComments(parsedComment, videoId);
+    await appendToComments(req.body.json, videoId);
     res.json({ message: 'Comment added successfully.'});
   }catch(error){
     res.status(500).json({error: 'Failed to add comment'});
@@ -163,8 +211,10 @@ app.post('/videos/:videoId/comment', async (req, res) => {
 // MARK: POST VIDEO
 app.post('/upload', upload.single('image'), async (req, res) => {
   try{
-    const parsedJSON = JSON.parse(req.body.json);
-    await uploadNewVideoData(parsedJSON);
+
+    // TODO: deal with the image name
+
+    await appendNewVideoDetails(req.body.json);
     res.json({message: 'File uploaded and JSON data received successfully.',});
   }catch(error){
     res.status(500).json({error: 'Failed to update JSON database',});
