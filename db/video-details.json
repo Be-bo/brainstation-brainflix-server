@@ -1,0 +1,16 @@
+{
+  "items": [
+    {
+      "title": "Testung Title",
+      "description": "Bruh, this ain't a real description tbh, just sayin.",
+      "id": "7b0d06af-c955-4885-80e9-c78ae77cf7d7",
+      "image": "http://localhost:80/public/image-1698432495953-447782256.jpeg",
+      "comments": [],
+      "duration": 0,
+      "video": "https://project-2-api.herokuapp.com/stream",
+      "views": 89010,
+      "likes": 9993,
+      "channel": "Kamron.Schmidt"
+    }
+  ]
+}
