@@ -3,14 +3,74 @@
     {
       "title": "Testung Title",
       "description": "Bruh, this ain't a real description tbh, just sayin.",
-      "id": "7b0d06af-c955-4885-80e9-c78ae77cf7d7",
-      "image": "http://localhost:80/public/image-1698432495953-447782256.jpeg",
+      "id": "0248631b-e022-4eb2-af4a-a27f20dc4810",
+      "image": "http://3.145.198.110:80/public/image-1698435772192-172152229.jpeg",
       "comments": [],
       "duration": 0,
       "video": "https://project-2-api.herokuapp.com/stream",
-      "views": 89010,
-      "likes": 9993,
-      "channel": "Kamron.Schmidt"
+      "views": 80449,
+      "likes": 7309,
+      "channel": "Juston77"
+    },
+    {
+      "title": "Testung Title",
+      "description": "Bruh, this ain't a real description tbh, just sayin.",
+      "id": "1b5f73bd-b2d0-40d8-af15-04c991d1ac45",
+      "image": "http://3.145.198.110:80/public/image-1698436099608-94616002.jpeg",
+      "comments": [],
+      "duration": 0,
+      "video": "https://project-2-api.herokuapp.com/stream",
+      "views": 59466,
+      "likes": 7062,
+      "channel": "Chance_Reinger"
+    },
+    {
+      "title": "Testung Title",
+      "description": "Bruh, this ain't a real description tbh, just sayin.",
+      "id": "c4d7669b-dc4b-42b7-a508-4944df993820",
+      "image": "http://3.145.198.110:80/public/image-1698436115412-681466283.jpeg",
+      "comments": [],
+      "duration": 0,
+      "video": "https://project-2-api.herokuapp.com/stream",
+      "views": 54652,
+      "likes": 1249,
+      "channel": "Kody.Gibson21"
+    },
+    {
+      "title": "Testung Title",
+      "description": "Bruh, this ain't a real description tbh, just sayin.",
+      "id": "670c4c4b-6c83-412d-a91f-4daa725e952a",
+      "image": "http://3.145.198.110:80/public/image-1698436123105-904275948.png",
+      "comments": [],
+      "duration": 0,
+      "video": "https://project-2-api.herokuapp.com/stream",
+      "views": 65494,
+      "likes": 8988,
+      "channel": "Tavares.Ullrich"
+    },
+    {
+      "title": "Testung Title",
+      "description": "Bruh, this ain't a real description tbh, just sayin.",
+      "id": "e3059a67-7e1c-4fa0-9d35-45fcadf79a62",
+      "image": "http://3.145.198.110:80/public/image-1698436149260-853486730.jpeg",
+      "comments": [],
+      "duration": 0,
+      "video": "https://project-2-api.herokuapp.com/stream",
+      "views": 77666,
+      "likes": 2114,
+      "channel": "Margot80"
+    },
+    {
+      "title": "Testung Title",
+      "description": "Bruh, this ain't a real description tbh, just sayin.",
+      "id": "996c4196-dfbd-4f39-a194-4429e686fbfd",
+      "image": "http://3.145.198.110:80/public/image-1698436167275-7880800.jpeg",
+      "comments": [],
+      "duration": 0,
+      "video": "https://project-2-api.herokuapp.com/stream",
+      "views": 79885,
+      "likes": 8849,
+      "channel": "Dennis.Runolfsson22"
     }
   ]
 }

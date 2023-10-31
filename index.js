@@ -12,7 +12,8 @@ const app = express();
 const videosPath = 'db/videos.json';
 const videoDetailsPath = 'db/video-details.json';
 const thumbnailsPath = 'public';
-const serverAddress = 'http://localhost:80';
+// const serverAddress = 'http://localhost:80';
+const serverAddress = 'http://3.145.198.110:80';
 let generatedFilename = '';
 
 
@@ -54,6 +55,7 @@ function generateFullVideoDetails(parsedPartialDetails, thumbnailName){
   parsedPartialDetails.views = generateRandomInt(50, 100000);
   parsedPartialDetails.likes = generateRandomInt(10, 10000);
   parsedPartialDetails.channel = faker.internet.userName();
+  parsedPartialDetails.timestamp = new Date().getTime();
 
   return parsedPartialDetails;
 }
@@ -108,7 +110,6 @@ function getStringifiedVideosJSON(){
   return new Promise(async (resolve, reject) => {
     try{
        const stringifiedVideos = await fs.promises.readFile(videosPath, 'utf-8');
-       console.log(stringifiedVideos);
        resolve(stringifiedVideos);
     }catch(error){
       console.log(error);
@@ -217,6 +218,3 @@ app.post('/upload', upload.single('image'), async (req, res) => {
 app.listen(80, () => {
   console.log('Server running on port 80.');
 });
-
-
-// TODO: next step = testing
