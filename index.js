@@ -18,6 +18,7 @@ let generatedFilename = '';
 
 
 // MARK: SETUP
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
@@ -26,7 +27,6 @@ app.use(
     credentials: true, // Enable credentials (cookies, authorization headers)
   })
 );
-
 app.use('/'+thumbnailsPath, express.static('public'));
 
 
@@ -60,6 +60,17 @@ function generateFullVideoDetails(parsedPartialDetails, thumbnailName){
   return parsedPartialDetails;
 }
 
+function generateCommentDetails(commentText){
+  let parsedComment = {};
+  parsedComment.id = uuidv4();
+  parsedComment.name = faker.internet.userName();
+  parsedComment.comment = commentText;
+  parsedComment.timestamp = new Date().getTime();
+  parsedComment.likes = generateRandomInt(10, 500);
+
+  return parsedComment;
+}
+
 function appendNewVideoDetails(stringifiedVideoDetails, thumbnailName) {
   return new Promise(async (resolve, reject) => {
     try{
@@ -87,16 +98,15 @@ function appendNewVideoDetails(stringifiedVideoDetails, thumbnailName) {
   });
 }
 
-function appendToComments(stringifiedComment, videoId){
+function appendToComments(commentText, videoId){
   return new Promise(async (resolve, reject) =>{
     try{
-      const parsedComment = JSON.parse(stringifiedComment);
       const fileData = await fs.promises.readFile(videoDetailsPath, 'utf-8');
       const parsedJSON = JSON.parse(fileData);
       const videoObject = parsedJSON.items.find((item) => {
         return item.id == videoId;
       });
-      videoObject.comments.push(parsedComment);
+      videoObject.comments.push(generateCommentDetails(commentText));
       await fs.promises.writeFile(videoDetailsPath, JSON.stringify(parsedJSON, null, 2));
       resolve();
     }catch(error){
@@ -195,7 +205,7 @@ app.get('/videos/:videoId', async (req, res) => {
 app.post('/videos/:videoId/comment', async (req, res) => {
   const videoId = req.params.videoId;
   try{
-    await appendToComments(req.body.json, videoId);
+    await appendToComments(req.body['comment-text'], videoId);
     res.json({ message: 'Comment added successfully.'});
   }catch(error){
     res.status(500).json({error: 'Failed to add comment'});
